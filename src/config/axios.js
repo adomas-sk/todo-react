@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { logout } from './reducer';
 
 export const initAxios = () => {
 	const customAxios = axios.create({
@@ -10,10 +9,10 @@ export const initAxios = () => {
 	return customAxios;
 };
 
-export const configAxios = (axiosInstance, dispatch) => {
+export const configAxios = axiosInstance => {
 	const onRequestSuccess = config => {
 		const token = window.localStorage.getItem('token');
-		const headers = {...config.headers};
+		const headers = { ...config.headers };
 		if (!token) {
 			return config;
 		}
@@ -36,8 +35,8 @@ export const configAxios = (axiosInstance, dispatch) => {
 	};
 
 	const onResponseFailure = error => {
-		if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-			dispatch(logout());
+		if (error.response && error.response.data && error.response.data.error) {
+			throw new Error(error.response.data.error);
 		}
 		throw error;
 	};

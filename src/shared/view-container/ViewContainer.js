@@ -1,7 +1,8 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { makeStyles, Snackbar } from '@material-ui/core';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { ERROR } from '../../config/reducer';
 
 const useStyle = makeStyles(theme => ({
 	container: {
@@ -40,10 +41,35 @@ const useStyle = makeStyles(theme => ({
 
 const ViewContainer = ({ children }) => {
 	const classes = useStyle();
+	const [open, setOpen] = useState();
 	const user = useSelector(state => state.user);
+	const error = useSelector(state => state.error);
+	const dispatch = useDispatch();
+
+	const handleClose = () => {
+		setOpen(false);
+		dispatch({ type: ERROR, payload: '' });
+	};
+
+	useEffect(() => {
+		if (error) {
+			setOpen(true);
+		}
+	}, [error]);
+
 	return (
 		<div className={classes.container}>
 			<header className={classes.header}>
+				<Snackbar
+					anchorOrigin={{
+						vertical: 'top',
+						horizontal: 'right',
+					}}
+					open={open}
+					autoHideDuration={6000}
+					onClose={handleClose}
+					message={error}
+				/>
 				<div className={classes.links}>
 					<Link className={classes.link} to="/">
 						Home

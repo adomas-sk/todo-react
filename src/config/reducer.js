@@ -17,6 +17,7 @@ const token = window.localStorage.getItem('token');
 export const initState = {
 	loading: false,
 	user: token ? { token } : null,
+	error: null,
 	todos: [],
 };
 
@@ -28,9 +29,8 @@ export const logout = () => async dispatch => {
 
 export const reducer = (state = initState, { type, payload }) => {
 	switch (type) {
-		// case UPDATE_TODO:
-		// 	case ADD_TODO:
-		// 	return {...state, loading: false};
+		case ERROR:
+			return { ...state, error: payload };
 		case GET_TODOS:
 			return { ...state, loading: false, todos: payload };
 		case LOADING:
@@ -49,6 +49,6 @@ const axiosInstance = initAxios();
 
 const store = createStore(reducer, applyMiddleware(thunk.withExtraArgument({ axios: axiosInstance })));
 
-configAxios(axiosInstance, store.dispatch);
+configAxios(axiosInstance);
 
 export default store;
